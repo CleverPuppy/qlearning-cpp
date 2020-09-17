@@ -73,3 +73,8 @@ Thumbs.db
 
 .vscode
 build/
+qlearning.config
+qlearning.creator
+qlearning.creator.user
+qlearning.files
+qlearning.includes

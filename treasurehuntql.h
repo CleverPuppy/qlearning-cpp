@@ -3,6 +3,7 @@
 
 #include "qlearning.h"
 #include <vector>
+#include <string>
 
 /*
  * std::vector<std::vector<char>> map 代表了二维网格地图
@@ -15,22 +16,21 @@
 
 class TreasureHuntQL : public QLearning
 {
-private:
+public:
     std::vector<std::vector<char>> map;
+    unsigned int start_state;
     unsigned int xMax;
     unsigned int yMax;
     void stateToXY(unsigned int state, int &x, int &y);
     unsigned int XYToState(int x, int y);
     bool isPositionValid(int x, int y);
-public:
-    TreasureHuntQL(unsigned int action_size,
-                   unsigned int state_size,
+    TreasureHuntQL(std::string mapfile,
                    float learning_reate,
                    float epsilon,
                    float gamma);
-    void setMap(std::vector<std::vector<char>>& map);
     virtual unsigned int transferFunction(unsigned int state, unsigned int action) override;
     virtual float rewardFunction(unsigned int state) override;
+    virtual bool isTerminate(unsigned int state) override;
 };
 
 #endif // TREASUREHUNTQL_H

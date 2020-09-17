@@ -1,5 +1,6 @@
 #include "treasurehuntql.h"
 #include <iostream>
+#include <fstream>
 
 #define UP 0
 #define DOWN 1
@@ -8,15 +9,13 @@
 
 inline void TreasureHuntQL::stateToXY(unsigned int state, int &x, int &y)
 {
-    int col_size = map[0].size();
-    x = state / col_size;
-    y = state % col_size;
+    x = state / yMax;
+    y = state % yMax;
 }
 
 inline unsigned int TreasureHuntQL::XYToState(int x, int y)
 {
-    int col_size = map[0].size();
-    return x * col_size + y;
+    return x * yMax + y;
 }
 
 bool TreasureHuntQL::isPositionValid(int x, int y)
@@ -28,18 +27,27 @@ bool TreasureHuntQL::isPositionValid(int x, int y)
     return true;
 }
 
-TreasureHuntQL::TreasureHuntQL(unsigned int action_size, unsigned int state_size, float learning_reate, float epsilon, float gamma)
-    :QLearning(action_size,state_size,learning_reate,epsilon,gamma)
-{
-
-}
-
-void TreasureHuntQL::setMap(std::vector<std::vector<char> > &map)
-{
-    if(map.empty() || map[0].empty()) return;
-    this->map = map;
+TreasureHuntQL::TreasureHuntQL(std::string mapfile, float learning_reate, float epsilon, float gamma)
+    :QLearning(learning_reate, epsilon, gamma)
+    {
+    std::fstream in(mapfile);
+    int row , col;
+    in >> row >> col;
+    map.resize(row + 2,
+                std::vector<char>(col + 2, 'X'));
     xMax = map.size();
     yMax = map[0].size();
+    for(int i = 1; i <= row; ++i)
+    {
+        for(int j = 1; j <= col; ++j)
+        {
+            char c;
+            in >> c;
+            if(c == 'S') start_state = XYToState(i,j);
+            map[i][j] = c;
+        }
+    }
+    initQTable(4, xMax*yMax);
 }
 
 unsigned int TreasureHuntQL::transferFunction(unsigned int state, unsigned int action)
@@ -79,4 +87,16 @@ float TreasureHuntQL::rewardFunction(unsigned int state)
         return 10.0f;
     }
     return -1.0f;
+}
+
+bool TreasureHuntQL::isTerminate(unsigned int state)
+{
+    int x;
+    int y;
+    stateToXY(state, x, y);
+    if(map[x][y] == 'X' || map[x][y] == 'T')
+    {
+        return true;
+    }
+    return false;
 }

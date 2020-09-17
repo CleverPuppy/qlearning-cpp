@@ -1,13 +1,11 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0.0)
+project(qlearning VERSION 0.1.0)
 
-set(CMAKE_CXX_FLAGS "-std=c++14")
+include(CTest)
+enable_testing()
 
-INCLUDE_DIRECTORIES(
-    $(PROJECT_SOURCE_DIR))
+add_executable(qlearning main.cpp qlearning.cpp treasurehuntql.cpp)
 
-set(SRC
-    ${PROJECT_SOURCE_DIR}/qlearning.cpp
-)
-
-project(q-learning)
-add_executable(${PROJECT_NAME} "main.cpp")
+set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+include(CPack)

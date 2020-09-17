@@ -1,0 +1,8 @@
+7 7
+S O O O O O O
+O O O O O O O
+O O X O O O O
+O O O O X O O
+O O O O O O O
+O X O O O O O
+O O O O O O T

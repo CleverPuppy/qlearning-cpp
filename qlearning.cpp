@@ -3,12 +3,12 @@
 #include <ctime>
 #include <random>
 #include <algorithm>
-void QLearning::run(unsigned int initState, bool (*isTerminate)(unsigned int state))
+void QLearning::run(unsigned int initState)
 {
     unsigned int nextState = initState;
     unsigned int action;
     float reward;
-    while (isTerminate(initState)) {
+    while (!isTerminate(initState)) {
         action = epsilonGreedy(initState);
         nextState = transferFunction(initState, action);
         reward = rewardFunction(nextState);
@@ -25,7 +25,7 @@ inline void QLearning::update(unsigned int state, unsigned int action, float rew
 unsigned int QLearning::bestAction(unsigned int state)
 {
     unsigned int ret = 0;
-    float tmp = FLT_MIN;
+    float tmp = -FLT_MAX;
     auto& action_reward = qtable[state];
     for(int i = 0; i < action_size; ++i)
     {
@@ -39,9 +39,6 @@ unsigned int QLearning::bestAction(unsigned int state)
 
 unsigned int QLearning::epsilonGreedy(unsigned int state)
 {
-    static std::default_random_engine engine(time(NULL));
-    static std::uniform_real_distribution<double> flag(0.0,1.0);
-    static std::uniform_int_distribution<int> randomAction(0,action_size);
     if(flag(engine) < epsilon){
         return bestAction(state);
     }else{
@@ -49,8 +46,29 @@ unsigned int QLearning::epsilonGreedy(unsigned int state)
     }
 }
 
-QLearning::QLearning(unsigned int action_size, unsigned int state_size, float learning_reate, float epsilon, float gamma):
-    action_size(action_size),state_size(state_size),learning_reate(learning_reate), epsilon(epsilon), gamma(gamma)
+QLearning::QLearning(unsigned int action_size, unsigned int state_size, float learning_rate, float epsilon, float gamma):
+    action_size(action_size),state_size(state_size),learning_rate(learning_rate), epsilon(epsilon), gamma(gamma)
 {
+    initQTable(action_size,state_size);
+}
+
+QLearning::QLearning(float learning_rate, float epsilon, float gamma)
+    :learning_rate(learning_rate),epsilon(epsilon),gamma(gamma)
+{
+
+}
+
+void QLearning::initQTable(unsigned int action_size, unsigned int state_size)
+{
+    this->action_size = action_size;
+    this->state_size = state_size;
     qtable.resize(state_size,std::vector<float>(action_size, 0.0f));  // 初始化为0
+    initRandomEngine();
+}
+
+void QLearning::initRandomEngine()
+{
+    engine.seed(time(nullptr));
+    flag = std::uniform_real_distribution<float>(0.0f,1.0f);
+    randomAction = std::uniform_int_distribution<unsigned int>(0, action_size - 1);
 }
