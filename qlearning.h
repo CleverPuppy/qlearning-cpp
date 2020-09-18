@@ -18,6 +18,7 @@ public:
     virtual float rewardFunction (unsigned int state) = 0;              // 即时奖励
     virtual void run(unsigned int initState);
     virtual void update(unsigned int state, unsigned int action, float reward, unsigned int next_state);
+    virtual void update(unsigned int state, unsigned int action, float reward, unsigned int next_state, float& loss);
     virtual unsigned int bestAction(unsigned int state);
     virtual unsigned int epsilonGreedy(unsigned int state);
     QLearning(unsigned int action_size, unsigned int state_size, float learning_reate, float epsilon, float gamma);

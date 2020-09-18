@@ -3,23 +3,41 @@
 #include <ctime>
 #include <random>
 #include <algorithm>
+#include <iostream>
+
 void QLearning::run(unsigned int initState)
 {
     unsigned int nextState = initState;
     unsigned int action;
     float reward;
+    float total_loss = 0.0;
+    unsigned int step = 0;
     while (!isTerminate(initState)) {
         action = epsilonGreedy(initState);
         nextState = transferFunction(initState, action);
         reward = rewardFunction(nextState);
-        update(initState,action,reward,nextState);
+        float _step_loss = 0.0f;
+        update(initState,action,reward,nextState, _step_loss);
+        total_loss += _step_loss;
+        step ++;
         initState = nextState;
     }
+    std::cout <<"steps : " << step
+             << ", Average loss : " << total_loss / step << std::endl;
 }
 
 inline void QLearning::update(unsigned int state, unsigned int action, float reward, unsigned int next_state)
 {
-    qtable[state][action] = reward + gamma * *std::max_element(qtable[next_state].begin(), qtable[next_state].end());
+    qtable[state][action] = (1 - learning_rate) * qtable[state][action] +  learning_rate * (
+                reward + gamma * *std::max_element(qtable[next_state].begin(), qtable[next_state].end()));
+}
+
+inline void QLearning::update(unsigned int state, unsigned int action, float reward, unsigned int next_state, float &loss)
+{
+    float prev = qtable[state][action];
+    qtable[state][action] = (1 - learning_rate) * qtable[state][action] +  learning_rate * (
+                reward + gamma * *std::max_element(qtable[next_state].begin(), qtable[next_state].end()));
+    loss = fabs(qtable[state][action] - prev);
 }
 
 unsigned int QLearning::bestAction(unsigned int state)
