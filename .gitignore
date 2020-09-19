@@ -78,3 +78,4 @@ qlearning.creator
 qlearning.creator.user
 qlearning.files
 qlearning.includes
+logs/

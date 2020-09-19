@@ -27,6 +27,6 @@ void testTreasureHunt(std::string filename)
 
 int main()
 {
-    testTreasureHunt("../tests/treasurehunt_map.txt");
+    testTreasureHunt("./tests/treasurehunt_map.txt");
     return 0;
 }
